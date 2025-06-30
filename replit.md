@@ -128,6 +128,7 @@ Recent Changes:
 - Added TLV QR code generation following ZATCA QR spec v2.1
 - Successfully demonstrated full workflow from credential generation to invoice clearance simulation
 - Created CommonJS-compatible demo script to work with current Node.js configuration
+- Added minimal web UI on port 5000 for testing CSR upload and certificate management workflow
 
 User Preferences:
 Preferred communication style: Simple, everyday language.
