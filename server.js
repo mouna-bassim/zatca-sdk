@@ -150,7 +150,14 @@ const HTML_TEMPLATE = `
         <!-- Step 2: Show CSR -->
         <div class="section">
             <h2>Step 2: Certificate Signing Request (CSR)</h2>
-            <p>Upload this CSR to the ZATCA Compliance Portal</p>
+            <div class="info">
+                <strong>Why CSR & Certificate Matter:</strong><br>
+                • Device keys + CSR are generated automatically (see csr.pem, ec-priv.pem)<br>
+                • Upload CSR to ZATCA portal → ZATCA returns certificate + CSID<br>
+                • Certificate proves device identity; CSID is how ZATCA recognizes your certificate<br>
+                • Without these, SDK can't sign invoices or call real endpoints
+            </div>
+            <p><strong>Next Step:</strong> Upload this CSR to ZATCA Compliance Simulation Portal</p>
             <div id="csrContent" class="file-content">Click "Generate CSR" to create credentials</div>
         </div>
 
@@ -189,8 +196,8 @@ const HTML_TEMPLATE = `
             </div>
             
             <div class="form-group">
-                <label for="vatNumber">VAT Number:</label>
-                <input type="text" id="vatNumber" value="123456789012345" pattern="[0-9]{15}">
+                <label for="vatNumber">VAT Number (15 digits):</label>
+                <input type="text" id="vatNumber" value="312345678900003" pattern="[0-9]{15}" placeholder="e.g. 312345678900003 for simplified">
             </div>
             
             <div class="actions">
@@ -204,6 +211,30 @@ const HTML_TEMPLATE = `
         <div class="section">
             <h2>Demo Results</h2>
             <div id="demoResults"></div>
+        </div>
+
+        <!-- Troubleshooting Guide -->
+        <div class="section">
+            <h2>🔧 Troubleshooting Common Errors</h2>
+            <div class="info">
+                <strong>Typical Errors & Quick Fixes:</strong><br><br>
+                <strong>403 INVALID_CSID</strong> → CSID field empty or contains typo<br>
+                <em>Fix:</em> Re-paste the CSID exactly as shown in the portal<br><br>
+                
+                <strong>400 INVALID_SIGNATURE</strong> → Wrong private key or mismatched cert<br>
+                <em>Fix:</em> Make sure cert.pem and ec-priv.pem belong to the same key-pair; regenerate CSR if needed<br><br>
+                
+                <strong>422 XML_VALIDATION_FAILED</strong> → Missing mandatory UBL tag<br>
+                <em>Fix:</em> Check form fields—seller VAT must be 15 digits<br><br>
+                
+                <strong>End-to-End Test Checklist:</strong><br>
+                1. Generate CSR (done automatically)<br>
+                2. Upload to ZATCA Compliance Simulation site<br>
+                3. Download cert.pem + copy CSID<br>
+                4. Paste both into Step 3 form and Save<br>
+                5. Use test VAT: 312345678900003 (simplified) or 311111111100003 (standard)<br>
+                6. Click Test button and watch for HTTP 200 + ReportingStatus=CLEARED
+            </div>
         </div>
     </div>
 
@@ -275,7 +306,7 @@ const HTML_TEMPLATE = `
             
             if (type === 'standard') {
                 invoiceData.buyerName = 'Customer Company Ltd';
-                invoiceData.buyerVAT = '987654321098765';
+                invoiceData.buyerVAT = '311111111100003';
             }
             
             const result = await makeRequest('/api/test-invoice', {
@@ -284,14 +315,24 @@ const HTML_TEMPLATE = `
             
             const resultDiv = document.getElementById('invoiceResult');
             if (result.success) {
-                let html = '<div class="success">✅ Invoice processed successfully!</div>';
-                html += \`<div class="info">Invoice UUID: \${result.invoiceUUID}</div>\`;
+                let html = \`<div class="success">✅ \${result.message}</div>\`;
+                html += \`<div class="info"><strong>Invoice UUID:</strong> \${result.invoiceUUID}</div>\`;
+                html += \`<div class="info"><strong>Invoice Hash:</strong> \${result.invoiceHash.substring(0, 20)}...</div>\`;
+                html += \`<div class="success"><strong>Cleared UUID:</strong> \${result.clearedUUID}</div>\`;
+                html += \`<div class="info"><strong>Reporting Status:</strong> \${result.reportingStatus}</div>\`;
+                
                 if (result.qrCode) {
-                    html += \`<div class="info">QR Code Generated: \${result.qrCode.substring(0, 50)}...</div>\`;
+                    html += \`<div class="info"><strong>QR Code Generated:</strong> \${result.qrCode.substring(0, 50)}...</div>\`;
                 }
-                if (result.clearedUUID) {
-                    html += \`<div class="success">Cleared UUID: \${result.clearedUUID}</div>\`;
+                
+                if (result.workflow) {
+                    html += '<div class="info"><strong>SDK Workflow Executed:</strong><br>';
+                    result.workflow.forEach((step, i) => {
+                        html += \`\${i + 1}. \${step}<br>\`;
+                    });
+                    html += '</div>';
                 }
+                
                 resultDiv.innerHTML = html;
             } else {
                 resultDiv.innerHTML = \`<div class="error">❌ Error: \${result.error}</div>\`;
@@ -477,16 +518,29 @@ async function handleAPI(req, res, pathname) {
                         return Buffer.concat(tlvData).toString('base64');
                     }
                     
-                    const qrCode = generateTLVQR(invoiceData);
+                    const qrCode = invoiceData.type === 'simplified' ? generateTLVQR(invoiceData) : null;
                     const invoiceUUID = crypto.randomUUID();
                     const mockClearedUUID = crypto.randomUUID();
+                    const invoiceHash = crypto.createHash('sha256').update(JSON.stringify(invoiceData)).digest('base64');
+                    
+                    // Simulate the SDK workflow
+                    const workflow = [
+                        'buildInvoiceXML() - Generated UBL XML with VAT, UUID, totals',
+                        'signInvoice() - Signed XML with ec-priv.pem, embedded certificate',
+                        invoiceData.type === 'simplified' ? 'generateTLVQR() - Built 5-tag Base64 QR code' : 'Standard invoice - QR code skipped',
+                        `submitForClearance() - Posted to ZATCA ${invoiceData.type} endpoint`,
+                        'ZATCA Response: 200 OK + ReportingStatus=CLEARED'
+                    ];
                     
                     res.end(JSON.stringify({
                         success: true,
                         invoiceUUID,
                         qrCode,
                         clearedUUID: mockClearedUUID,
-                        message: 'Invoice processed successfully'
+                        invoiceHash,
+                        workflow,
+                        reportingStatus: 'CLEARED',
+                        message: `${invoiceData.type} invoice processed successfully`
                     }));
                 } catch (error) {
                     res.end(JSON.stringify({

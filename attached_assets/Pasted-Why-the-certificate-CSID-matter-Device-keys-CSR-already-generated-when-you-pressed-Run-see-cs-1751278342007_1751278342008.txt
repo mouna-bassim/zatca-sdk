@@ -1,0 +1,80 @@
+Why the certificate & CSID matter
+Device keys + CSR – already generated when you pressed Run (see csr.pem, ec-priv.pem).
+
+Upload CSR in ZATCA portal – ZATCA returns a public-key certificate and a long hexadecimal ID called CSID.
+The certificate proves your device identity; the CSID is how ZATCA recognises that certificate in API calls.
+
+Without those two items the SDK can’t sign the invoice or call the real endpoints, so Step 3 is mandatory once per device.
+
+Paste them once, click Save Certificate & CSID – the UI stores them (for now) in .env and writes cert.pem on disk.
+
+What happens when you hit “Test Simplified Invoice”
+The page POSTs your form data to a tiny Express route (server.js).
+
+That route calls the SDK functions in this order:
+
+buildInvoiceXML() – fills the UBL template with your VAT, UUID, totals, etc.
+
+signInvoice() – signs the XML with ec-priv.pem, embeds your cert serial.
+
+generateTLVQR() – builds the 5-tag, Base64 QR text (required for B2C).
+
+submitForClearance() – HTTPS POST to
+https://gw-fatoora.zatca.gov.sa/e-invoicing/simulation/clearance/simplified
+with headers Compliance-CSID: <your CSID> and Clearance-Status: SIMULATION.
+
+ZATCA’s sandbox replies 200 OK plus JSON that includes
+
+ClearedUUID – the official invoice ID
+
+ReportingStatus=CLEARED
+
+Echo of your invoice hash / QR
+
+The UI pops a toast or logs “✅ Cleared – ID: <UUID>”.
+
+If you choose Test Standard Invoice, the call goes to the /clearance/standard endpoint, uses the B2B XML template and skips the TLV QR.
+
+How to do a proper end-to-end test
+Generate CSR (already done).
+
+Portal upload – use ZATCA’s “Compliance Simulation” site → download cert.pem + copy CSID.
+
+Paste both into Step 3 form and click Save.
+
+Enter test data
+
+Simplified: amount 100 SAR, seller VAT 312345678900003.
+
+Standard: add a dummy buyer VAT, e.g. 311111111100003.
+
+Hit the relevant Test button.
+
+Watch the console (or the onscreen log) for
+
+makefile
+Copy
+Edit
+HTTP 200 – ReportingStatus=CLEARED
+ClearedUUID: 7d12…
+InvoiceHash: 3bfa…
+Congratulations—you’ve gone 100 % through the Phase-2 sandbox flow.
+
+Typical errors and quick fixes
+Error message	Likely cause	Fix
+403 INVALID_CSID	CSID field empty or contains typo	Re-paste the CSID exactly as shown in the portal.
+400 INVALID_SIGNATURE	Wrong private key or mismatched cert	Make sure cert.pem and ec-priv.pem belong to the same key-pair; regenerate CSR if needed.
+422 XML_VALIDATION_FAILED	Missing mandatory UBL tag (e.g. SellerVatNumber)	Check the form fields—seller VAT must be 15 digits.
+
+What this SDK fixes for real-world devs
+Generates the UBL-SA XML with all mandatory hashes (InvoiceHash, PreviousInvoiceHash).
+
+Handles ECDSA secp256k1 signing and embeds the cert—no OpenSSL command-line gymnastics.
+
+Creates the TLV QR and base64 you must print on B2C receipts.
+
+Wraps the /compliance and /clearance calls so you need one function, not six steps.
+
+In production a back-office system would call the SDK each time it finalises an invoice; this demo just proves the plumbing works.
+
+Next move: upload your real CSR to the sandbox, clear an invoice, then call it done—or wire the same functions into whatever ERP or storefront you (or a future customer) already run. If any specific API error pops up, copy the text here and I’ll help decode it.
