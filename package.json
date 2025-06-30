@@ -18,5 +18,15 @@
     "dotenv": "^17.0.0",
     "jest": "^30.0.3",
     "uuid": "^11.1.0"
-  }
+  },
+
+  "name": "zatca-sdk-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/pro"
+  ],
+
+
+
 }
