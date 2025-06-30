@@ -3,9 +3,12 @@ on:
   push:
     tags:
       - 'v*'
+
+  permissions:
+  contents: write
+  
   workflow_dispatch:
-permissions:
-contents: write   # allow create-release to write releases
+
 jobs:
   publish-core:
     runs-on: ubuntu-latest
