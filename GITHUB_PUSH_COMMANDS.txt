@@ -1,0 +1,44 @@
+# Copy these commands to push to GitHub
+
+# Step 1: Add GitHub remote (if not already done)
+git remote add origin git@github.com:mouna-bassim/zatca-sdk.git
+
+# Step 2: Add all production-ready files
+git add .
+
+# Step 3: Commit with descriptive message
+git commit -m "feat: Convert to production-ready npm packages
+
+✅ Core package ready for npm registry (@zatca-sdk/core)
+✅ Pro package configured for GitHub Packages (@zatca-sdk/pro)  
+✅ CI/CD pipeline with automated publishing on git tags
+✅ Gumroad payment integration with webhook handlers
+✅ Demo environment separated from production packages
+✅ TypeScript build configurations and proper metadata
+✅ Post-install hints and comprehensive documentation
+
+Production Features:
+- Automated npm publishing on version tags
+- Premium licence validation system
+- Complete payment processing infrastructure  
+- Multilingual demo environment
+- Security audit capabilities
+- Developer-friendly workspace structure"
+
+# Step 4: Push to GitHub
+git push -u origin main
+
+# Step 5: Create and push first release tag (triggers automated npm publishing)
+git tag v1.0.0
+git push --tags
+
+# This will trigger the GitHub Actions workflow to:
+# - Build and test Core package
+# - Publish @zatca-sdk/core to npm registry  
+# - Create GitHub release with changelog
+# - Make package available for installation
+
+# Verify deployment success:
+# - Check: https://www.npmjs.com/package/@zatca-sdk/core
+# - Test: npm install @zatca-sdk/core
+# - Run: npx zatca-sdk doctor
