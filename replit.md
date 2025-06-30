@@ -122,18 +122,17 @@ Changelog:
 - June 30, 2025. Successfully implemented complete ZATCA Phase-2 e-Invoice SDK with working demo
 
 Recent Changes:
-- Created working npm start demo that shows CSR generation and mock invoice clearance
-- Implemented complete cryptographic flow with secp256k1 key generation
-- Built UBL-compliant XML generation for simplified invoices
-- Added TLV QR code generation following ZATCA QR spec v2.1
-- Successfully demonstrated full workflow from credential generation to invoice clearance simulation
-- Created CommonJS-compatible demo script to work with current Node.js configuration
-- Added minimal web UI on port 5000 for testing CSR upload and certificate management workflow
-- Implemented Arabic ⇄ English language toggle for bilingual support in web interface
-- Enhanced API integration with proper ZATCA endpoint mapping (Door A: Compliance, Door B: Clearance)
-- Added JSON-based internationalization system for cleaner bilingual support
-- Created comprehensive test suite (node test-zatca.js) with 100% pass rate
-- Implemented proper ZATCA error handling and response parsing
+- **MAJOR RESTRUCTURE**: Transformed into freemium/premium monorepo architecture
+- **Core Package (@zatca-sdk/core)**: Free sandbox tier with simulation endpoints only
+- **Pro Package (@zatca-sdk/pro)**: Premium production tier with licence validation
+- **Business Model**: Freemium model with clear upgrade path to production features
+- **Licence System**: ZSDK-prefixed tokens with CLI and environment variable support
+- **Premium Features**: Production endpoints, auto-retry, certificate monitoring, TypeScript definitions
+- **Documentation**: Complete README, purchase page (/buy.html), API reference
+- **Demo System**: Separate core-demo (free) and pro-demo (premium) with licence validation
+- **Testing**: Jest test suites for both packages validating licence system
+- **Web UI**: Updated with premium upgrade banner and bilingual support
+- **TypeScript**: Full .d.ts definitions for Pro package premium features
 
 User Preferences:
 Preferred communication style: Simple, everyday language.

@@ -1,0 +1,75 @@
+🔹  PROJECT TITLE
+“ZATCA Phase-2 e-Invoice SDK – Freemium + Premium”
+
+──────────────────────────  BUSINESS RULES  ──────────────────────────
+• Free tier (“sandbox mode”)
+    – Can only call ZATCA **/simulation** endpoints.
+    – Hard-codes header `Clearance-Status: SIMULATION`.
+    – Prints a friendly message if the user tries to switch to production.
+
+• Premium tier (“production mode”)
+    – Unlocked by a licence token in ENV or CLI flag.
+    – Allows apiBase = "https://gw-fatoora.zatca.gov.sa/e-invoicing/production".
+    – Adds:
+         ▸ automatic retry (3×, exponential backoff)
+         ▸ helper to auto-renew the certificate 30 d before expiry
+         ▸ TypeScript typings (d.ts) for public API.
+
+• Licence token format
+    – 20-char alphanumeric, starts with “ZSDK”.
+    – validation = SHA-256 HMAC of the buyer’s e-mail with a secret pepper
+      (stub this as “always valid” in demo; leave a TODO comment).
+    – ENV name:  `ZSDK_LICENCE_KEY`.
+    – CLI flag:  `--licence <token>` overrides ENV.
+
+──────────────────────────  DELIVERABLES  ────────────────────────────
+1. **Monorepo** with two npm packages:
+      packages/core     → free sandbox library (MIT).
+      packages/pro      → thin wrapper that imports core + prod extras.
+2. Root README that explains:
+      ▸ “npm i @zatca-sdk/core” for sandbox,
+      ▸ “npm i @zatca-sdk/pro”  for production + licence key,
+      ▸ how to obtain a key at `/buy.html` (placeholder).
+3. `/buy.html` in /docs   – dummy checkout button linking to Gumroad;
+   shows where webhooks will go (no back-end code needed now).
+4. License checker:
+      `packages/pro/src/licence.js` exports `assertPremium()` –
+      throws Error if key missing or invalid.
+5. Update previous CLI demo:
+      ▸ `core-demo`  → always simulation.
+      ▸ `pro-demo --licence $ZSDK_LICENCE_KEY`  → production URL.
+      If licence invalid, print:
+         "⛔  Premium features locked – get a key at /buy.html"
+6. Jest tests:
+      ▸ licence passes, prod endpoint allowed.
+      ▸ licence missing, prod call rejected with specific error.
+7. *.replit* should run **core-demo** by default so free users see success.
+8. Keep Arabic ↔ English UI toggle in `server.js` but add a banner:
+      “Production mode requires licence key”.
+
+──────────────────────────  TECH DETAILS  ────────────────────────────
+• Language: Node 18, ESM (“type”: “module”).
+• Internal packages use pnpm workspaces (or npm workspaces if simpler).
+• licence validation stub:
+      ```js
+      import crypto from 'crypto';
+      export function isValid(token){
+        return /^ZSDK[A-Za-z0-9]{16}$/.test(token);
+      }
+      ```
+• Exported public API from both packages:
+      createCSR, buildInvoiceXML, signInvoice, generateTLVQR,
+      submitForClearance.
+      In core: prod functions throw “Premium only”.
+      In pro: they work if licence valid.
+
+──────────────────────────  SUCCESS CRITERIA  ────────────────────────
+When user clicks **Run**:
+   1. Installs workspaces.
+   2. Executes “core-demo”: prints CLEARED (simulation).
+   3. Prints: "👉  Ready to unlock production: run  npm run pro-demo -- --licence <key>"
+
+No front-end beyond the existing Express test page.  
+No payment integration code yet – just the placeholder.
+
+Generate the full project now.

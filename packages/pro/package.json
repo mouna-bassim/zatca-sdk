@@ -1,0 +1,22 @@
+{
+  "name": "@zatca-sdk/pro",
+  "version": "1.0.0",
+  "description": "ZATCA Phase-2 e-Invoice SDK - Premium Production Tier",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "demo": "node demo.js",
+    "test": "jest"
+  },
+  "keywords": ["zatca", "saudi", "e-invoice", "production", "premium"],
+  "author": "ZATCA SDK Team",
+  "license": "MIT",
+  "dependencies": {
+    "@zatca-sdk/core": "^1.0.0",
+    "chalk": "^5.0.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}

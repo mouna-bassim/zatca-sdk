@@ -1,0 +1,22 @@
+{
+  "name": "@zatca-sdk/core",
+  "version": "1.0.0",
+  "description": "ZATCA Phase-2 e-Invoice SDK - Free Sandbox Tier",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "demo": "node demo.js",
+    "test": "jest"
+  },
+  "keywords": ["zatca", "saudi", "e-invoice", "sandbox"],
+  "author": "ZATCA SDK Team",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "dotenv": "^16.0.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}

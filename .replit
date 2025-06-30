@@ -35,6 +35,14 @@ args = "Web Server"
 task = "workflow.run"
 args = "Test Suite"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Core Demo"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Pro Demo"
+
 [[workflows.workflow]]
 name = "ZATCA SDK Demo"
 author = "agent"
@@ -84,6 +92,22 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node test-zatca.js"
+
+[[workflows.workflow]]
+name = "Core Demo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd packages/core && node demo.js"
+
+[[workflows.workflow]]
+name = "Pro Demo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd packages/pro && node demo.js --licence ZSDK1234567890ABCDEF"
 
 [[ports]]
 localPort = 5000

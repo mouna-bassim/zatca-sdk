@@ -171,12 +171,47 @@ const HTML_TEMPLATE = `
         .rtl .actions {
             justify-content: flex-end;
         }
+        .premium-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .premium-banner h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        .premium-banner p {
+            margin: 0 0 15px 0;
+            opacity: 0.9;
+        }
+        .premium-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            transition: background 0.3s ease;
+        }
+        .premium-btn:hover {
+            background: #218838;
+        }
     </style>
 </head>
 <body>
     <button class="language-toggle" onclick="toggleLanguage()" id="langToggle">العربية</button>
     <div class="container">
         <h1 data-en="🚀 ZATCA Phase-2 e-Invoice SDK Testing" data-ar="🚀 اختبار حلول الفوترة الإلكترونية المرحلة الثانية - هيئة الزكاة والضريبة والجمارك">🚀 ZATCA Phase-2 e-Invoice SDK Testing</h1>
+        
+        <div class="premium-banner">
+            <h3 data-en="🔓 Production Mode Available" data-ar="🔓 وضع الإنتاج متاح">🔓 Production Mode Available</h3>
+            <p data-en="Ready for live Saudi business operations? Unlock production ZATCA endpoints with auto-retry and certificate monitoring." data-ar="جاهز لعمليات الأعمال السعودية المباشرة؟ افتح نقاط النهاية الإنتاجية للهيئة مع إعادة المحاولة التلقائية ومراقبة الشهادات.">Ready for live Saudi business operations? Unlock production ZATCA endpoints with auto-retry and certificate monitoring.</p>
+            <a href="docs/buy.html" class="premium-btn" data-en="Get Premium Licence →" data-ar="احصل على الترخيص المميز ←">Get Premium Licence →</a>
+        </div>
         
         <!-- Step 1: Generate CSR -->
         <div class="section">
