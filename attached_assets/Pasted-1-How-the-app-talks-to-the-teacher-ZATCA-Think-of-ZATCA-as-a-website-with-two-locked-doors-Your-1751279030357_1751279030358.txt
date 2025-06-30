@@ -1,0 +1,101 @@
+1 How the app “talks to the teacher” (ZATCA)
+Think of ZATCA as a website with two locked doors.
+Your program knocks on those doors with ordinary HTTPS calls (just like a browser visits a URL), but it has to show the right key and password in the request headers:
+
+Door	What it’s called in the spec	When you use it	URL in the sandbox	Key words in the headers
+Door A	Compliance / Device-enablement API	Once per device, right after you upload your CSR	POST /e-invoicing/simulation/compliance	Compliance-CSID: <your CSID>
+Door B	Clearance API	Every time you issue an invoice	• POST /e-invoicing/simulation/clearance/standard (B2B)
+• POST /e-invoicing/simulation/clearance/simplified (B2C)	Compliance-CSID + Clearance-Status: SIMULATION
+
+All three endpoints live under the same base URL:
+https://gw-fatoora.zatca.gov.sa 
+learn.microsoft.com
+
+Inside the POST body you send the signed XML invoice (Base64-encoded) and its hash. The server checks the signature, matches the CSID, and replies with ReportingStatus=CLEARED plus a unique invoice UUID. 
+zatca1.discourse.group
+
+2 Why you needed a CSR & CSID first
+Your app generated a key-pair (ec-priv.pem) and a CSR (csr.pem).
+
+You upload the CSR in ZATCA’s portal ➜ ZATCA signs your public key and gives you:
+
+cert.pem – proof that the keys belong to a real taxpayer device.
+
+CSID – an ID you must place in the request header.
+
+From then on, every API request includes:
+
+the signed XML (which embeds your certificate serial number),
+
+the Compliance-CSID header.
+
+That combo is ZATCA’s way of saying “Yes, this exact device is allowed to issue tax invoices.”
+
+3 Step-by-step test before you deploy
+You’ve done steps 1–3 already by pressing Run and seeing the green ticks.
+
+#	Action in the UI or CLI	What to watch for
+1	Download CSR (csr.pem) from the Replit file tree.	File ≈1 kB PEM text.
+2	Upload CSR to ZATCA Compliance → Simulation portal.	Portal returns cert.pem + shows your CSID (long hex).
+3	Paste CSID and cert into Step 3 of the UI → Save Certificate.	The page writes cert.pem, updates .env.
+4	Hit Test Simplified Invoice (B2C) or Test Standard Invoice (B2B).	Console should print: HTTP 200 – ReportingStatus=CLEARED and a ClearedUUID.
+5 (optional)	Run npm test in the shell.	Jest passes = automated proof everything works.
+
+If you get a 400/403 error, check: CSID typo, VAT numbers, or that the cert & private key belong to the same pair.
+
+4 Explained like you’re five (re-cap)
+You draw a receipt (XML).
+
+You stamp it with your secret pen (digital signature).
+
+You show it to the teacher (ZATCA API).
+
+The teacher says “✅ Good” and writes a special number on it (ClearedUUID).
+
+You keep that approved receipt forever.
+
+The app automates every one of those grown-up steps so you don’t have to think about them.
+
+5 Making the little web page bilingual
+Add two JSON files
+
+text
+Copy
+Edit
+i18n/
+  en.json   → { "uploadCert": "Upload Certificate & CSID", ... }
+  ar.json   → { "uploadCert": "رفع الشهادة ومعرّف الجهاز", ... }
+Minimal i18n helper
+
+js
+Copy
+Edit
+const dict = { en: require('./i18n/en.json'),
+               ar: require('./i18n/ar.json') };
+let lang = 'en';
+app.get('/lang/:id', (req,res)=>{ lang=req.params.id; res.redirect('/'); });
+function t(key){ return dict[lang][key] || key; }
+Swap direction
+
+html
+Copy
+Edit
+<html lang="${lang}" dir="${lang==='ar' ? 'rtl':'ltr'}">
+Add a 🌐 button
+
+html
+Copy
+Edit
+<a href="/lang/${lang==='en'?'ar':'en'}">AR / EN</a>
+Now finance staff can switch to Arabic while devs keep English.
+
+6 When you’re happy with testing
+Flip the API base URL from /simulation to the production path (/production) in .env.
+
+Re-upload the CSR in the Production portal (gets a new cert & CSID).
+
+Deploy the Node package to the client’s server or ship it as an NPM module.
+
+That’s it—you’re live and Phase-2 compliant.
+
+If any specific error pops up while hitting the sandbox or production endpoints, paste the exact message here and we’ll decode the next layer together.

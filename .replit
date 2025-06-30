@@ -31,6 +31,10 @@ args = "npm start"
 task = "workflow.run"
 args = "Web Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Test Suite"
+
 [[workflows.workflow]]
 name = "ZATCA SDK Demo"
 author = "agent"
@@ -72,6 +76,14 @@ author = "agent"
 task = "shell.exec"
 args = "node server.js"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Test Suite"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node test-zatca.js"
 
 [[ports]]
 localPort = 5000

@@ -130,6 +130,10 @@ Recent Changes:
 - Created CommonJS-compatible demo script to work with current Node.js configuration
 - Added minimal web UI on port 5000 for testing CSR upload and certificate management workflow
 - Implemented Arabic ⇄ English language toggle for bilingual support in web interface
+- Enhanced API integration with proper ZATCA endpoint mapping (Door A: Compliance, Door B: Clearance)
+- Added JSON-based internationalization system for cleaner bilingual support
+- Created comprehensive test suite (node test-zatca.js) with 100% pass rate
+- Implemented proper ZATCA error handling and response parsing
 
 User Preferences:
 Preferred communication style: Simple, everyday language.

@@ -12,6 +12,17 @@ const crypto = require('crypto');
 
 const PORT = 5000;
 
+// I18n support
+const dict = {
+    en: require('./i18n/en.json'),
+    ar: require('./i18n/ar.json')
+};
+let currentLang = 'en';
+
+function t(key) {
+    return dict[currentLang][key] || key;
+}
+
 // Simple HTML template
 const HTML_TEMPLATE = `
 <!DOCTYPE html>
