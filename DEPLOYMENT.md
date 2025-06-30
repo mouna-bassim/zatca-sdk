@@ -97,8 +97,10 @@ This will trigger the GitHub Actions workflow to:
 Check that everything is working:
 
 1. **npm Registry**: https://www.npmjs.com/package/@zatca-sdk/core
-2. **GitHub Release**: https://github.com/mouna-bassim/zatca-sdk/releases
-3. **Package Installation**: `npm install @zatca-sdk/core`
+2. **Package README**: Comprehensive documentation visible on npm website
+3. **GitHub Release**: https://github.com/mouna-bassim/zatca-sdk/releases
+4. **Package Installation**: `npm install @zatca-sdk/core`
+5. **Pro Package**: Available on GitHub Packages with premium features
 
 ## Directory Structure After Deployment
 

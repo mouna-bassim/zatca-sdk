@@ -134,6 +134,7 @@ Recent Changes:
 - **Core Package (@zatca-sdk/core)**: Production-ready with proper metadata and build scripts
 - **Pro Package (@zatca-sdk/pro)**: GitHub Packages distribution with commercial licensing
 - **Webhook Stubs**: Future-ready payment integration infrastructure
+- **Package README Files**: Created comprehensive README.md files for both Core and Pro packages for npm website display
 
 User Preferences:
 Preferred communication style: Simple, everyday language.
