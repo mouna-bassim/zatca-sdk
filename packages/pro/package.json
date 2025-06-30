@@ -1,11 +1,18 @@
 {
   "name": "@zatca-sdk/pro",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Premium ZATCA Phase-2 e-Invoice SDK for Saudi Arabia - production endpoints and enterprise features",
   "type": "module",
   "main": "src/index.js",
   "private": true,
-  "keywords": ["zatca", "saudi-arabia", "e-invoice", "production", "premium", "enterprise"],
+  "keywords": [
+    "zatca",
+    "saudi-arabia",
+    "e-invoice",
+    "production",
+    "premium",
+    "enterprise"
+  ],
   "author": "Mouna Bassim <mouna@example.com>",
   "license": "Commercial",
   "repository": {
