@@ -3,14 +3,9 @@ on:
   push:
     tags:
       - 'v*'
-
-  
   workflow_dispatch:
-  # ---------- add these two lines ----------
-  permissions:
-    contents: write
-  # ----------------------------------------
-
+permissions:
+  contents: write
 jobs:
   publish-core:
     runs-on: ubuntu-latest
