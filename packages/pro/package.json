@@ -1,6 +1,6 @@
 {
-  "name": "@zatca-sdk/pro",
-  "version": "1.0.1",
+  "name": "@mouna-bassim/pro",
+  "version": "1.0.4",
   "description": "Premium ZATCA Phase-2 e-Invoice SDK for Saudi Arabia - production endpoints and enterprise features",
   "type": "module",
   "main": "src/index.js",

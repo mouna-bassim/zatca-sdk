@@ -1,4 +1,4 @@
-# @zatca-sdk/pro
+# @mouna-bassim/pro
 
 [![npm version](https://badge.fury.io/js/@zatca-sdk%2Fpro.svg)](https://badge.fury.io/js/@zatca-sdk%2Fpro)
 [![License: Commercial](https://img.shields.io/badge/License-Commercial-red.svg)](LICENSE)
@@ -41,13 +41,13 @@ This is a **commercial package** requiring a valid license key.
 
 ### 1. Install Package
 ```bash
-npm install @zatca-sdk/pro
+npm install @mouna-bassim/pro
 ```
 
 ### 2. Authentication Setup
 ```bash
 # Configure GitHub Packages authentication
-echo "@zatca-sdk:registry=https://npm.pkg.github.com" >> ~/.npmrc
+echo "@mouna-bassim:registry=https://npm.pkg.github.com" >> ~/.npmrc
 echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
 ```
 
