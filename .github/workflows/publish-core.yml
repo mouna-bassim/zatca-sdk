@@ -20,7 +20,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           
       - name: Install dependencies
-        run: npm ci -w packages/core
+        
+  run: |
+    cd packages/core
+    npm ci
         
       - name: Run tests
         run: npm test -w packages/core
