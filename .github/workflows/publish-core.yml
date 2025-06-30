@@ -18,20 +18,21 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
           
-      - name: Install all dependencies
+      # Install all dependencies including workspaces
+      - name: Install dependencies
         run: npm ci
         
-      - name: Run tests in core package
-        working-directory: ./packages/core
-        run: npm test
+      # Run tests using npm run with workspace
+      - name: Run tests
+        run: npm run test -w packages/core
         
-      - name: Build core package
-        working-directory: ./packages/core
-        run: npm run build
+      # Build using npm run with workspace
+      - name: Build package
+        run: npm run build -w packages/core
         
-      - name: Publish to npm from core directory
-        working-directory: ./packages/core
-        run: npm publish --access public
+      # Publish using workspace
+      - name: Publish to npm
+        run: npm publish -w packages/core --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           
