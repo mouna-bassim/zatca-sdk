@@ -2,7 +2,7 @@ modules = ["nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["tree"]
+packages = ["tree", "got"]
 
 [workflows]
 runButton = "Project"
