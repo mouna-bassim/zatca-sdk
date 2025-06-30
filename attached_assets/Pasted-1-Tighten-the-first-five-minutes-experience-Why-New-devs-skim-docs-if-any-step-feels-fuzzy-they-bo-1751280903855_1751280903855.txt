@@ -1,0 +1,38 @@
+1 Tighten the first-five-minutes experience
+Why: New devs skim docs; if any step feels fuzzy they bounce or flood support.
+
+Opportunity	Suggestion
+Device-registration TL;DR	Add an ASCII timeline (→ CSR → portal → cert/CSID → .env → “npm run clear”) right at the top of the README. Developers can visualise the journey before they scroll deeper.
+Copy-paste snippets	Wherever you call a CLI flag (--licence) or set ZSDK_LICENCE_KEY, put the exact command block immediately under the bullet. Saves readers a context switch.
+Post-install sanity check	Ship a tiny script npx zatca-sdk doctor (works in both tiers). It verifies Node ≥ 18, checks that OpenSSL was compiled with secp256k1, and confirms network reachability to the sandbox URL. Successful run prints ✅ in green.
+
+2 Strengthen licence management (premium moat)
+Grace period header
+Have the Pro package insert X-ZSDK-Expires-In: <days> in the clearance call. If days ≤ 7, print a yellow console warning. That protects production flows and nudges timely renewal.
+
+Offline activation
+Let enterprise customers generate an activation file via zatca-sdk activate --email user@corp.sa --vat 3… which outputs a JSON they email you. You send back a signed licence token; the SDK accepts ZSDK_LICENCE_PATH=/etc/zsdk/lic.pem. Solves the “no outbound internet” data-sovereignty objection.
+
+3 Marketing & trust signals
+ZATCA listing
+The “solution provider” catalogue links straight to vendor homepages. A one-pager that says “Developer SDK • Node 18 • Secp256k1 • Ready for Wave 3” converts lurkers. Get listed early; it’s free exposure.
+
+Live status badge
+Hook your GitHub Action to a shield in the README: Sandbox ✔ | Last CLEARED: 2025-06-30 09:17 UTC. Anyone can see at a glance the SDK still passes ZATCA schema validation.
+
+Security audit mention
+Even a quick, self-published OpenSSL command showing that the private key never leaves disk (“Key pair generated locally — never sent to our servers”) reassures corporate buyers.
+
+4 Edge-case features to drop in your backlog
+Feature	Value	Effort
+Partial retries	Only retry on transient HTTP codes (408/429/5xx). Saves accidental dup-posting if the first call actually cleared.	Medium (wrap axios with idempotency key hash).
+Invoice hash chain helper	Stores last InvoiceHash in a lightweight JSON DB so PreviousInvoiceHash is always correct across restarts.	Low (fs + fallback to Memory).
+PDF/A-3 wrapper	Streams the signed XML into a PDF for auditors who demand “human readable”. Good upsell for enterprises.	Medium-high (pdf-lib + ZUGFeRD style embed).
+
+5 Docs nit-picks (mostly readability)
+Spell out “CSID” the first time: Compliance Secure ID (CSID).
+
+Ensure code blocks specify language for syntax highlighting, e.g., ```js.
+
+Call the Phase-2 spec section numbers in parentheses, not brackets, to avoid confusion with Markdown links.
+

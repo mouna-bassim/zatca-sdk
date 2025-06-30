@@ -43,6 +43,10 @@ args = "Core Demo"
 task = "workflow.run"
 args = "Pro Demo"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Doctor Check"
+
 [[workflows.workflow]]
 name = "ZATCA SDK Demo"
 author = "agent"
@@ -108,6 +112,14 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd packages/pro && node demo.js --licence ZSDK1234567890ABCDEF"
+
+[[workflows.workflow]]
+name = "Doctor Check"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd packages/core && node bin/zatca-sdk-doctor.js"
 
 [[ports]]
 localPort = 5000

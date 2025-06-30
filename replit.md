@@ -123,16 +123,17 @@ Changelog:
 
 Recent Changes:
 - **MAJOR RESTRUCTURE**: Transformed into freemium/premium monorepo architecture
+- **Enhanced Developer Experience**: Added ASCII timeline, copy-paste snippets, post-install doctor script
+- **Doctor Script**: npx zatca-sdk doctor validates Node ≥18, OpenSSL secp256k1, ZATCA connectivity
+- **Premium Licence Management**: Expiry warnings (X-ZSDK-Expires-In header), offline activation support
+- **Security & Trust**: Security audit commands, live status badges, ZATCA compliance indicators
+- **Improved Documentation**: CSID explanation, syntax highlighting, copy-paste command blocks
 - **Core Package (@zatca-sdk/core)**: Free sandbox tier with simulation endpoints only
 - **Pro Package (@zatca-sdk/pro)**: Premium production tier with licence validation
 - **Business Model**: Freemium model with clear upgrade path to production features
 - **Licence System**: ZSDK-prefixed tokens with CLI and environment variable support
 - **Premium Features**: Production endpoints, auto-retry, certificate monitoring, TypeScript definitions
-- **Documentation**: Complete README, purchase page (/buy.html), API reference
-- **Demo System**: Separate core-demo (free) and pro-demo (premium) with licence validation
-- **Testing**: Jest test suites for both packages validating licence system
 - **Web UI**: Updated with premium upgrade banner and bilingual support
-- **TypeScript**: Full .d.ts definitions for Pro package premium features
 
 User Preferences:
 Preferred communication style: Simple, everyday language.

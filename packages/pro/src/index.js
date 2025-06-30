@@ -52,6 +52,19 @@ export class ZATCAInvoiceSDKPro extends CoreSDK {
       ? { 'Clearance-Status': 'SIMULATION' }
       : {}; // Production headers
     
+    // Add licence expiry warning header
+    const licenceToken = process.env.ZSDK_LICENCE_KEY;
+    if (licenceToken) {
+      // Simulate licence expiry check (in real implementation, decode JWT or check database)
+      const daysUntilExpiry = 30; // Mock value
+      headers['X-ZSDK-Expires-In'] = daysUntilExpiry.toString();
+      
+      if (daysUntilExpiry <= 7) {
+        console.log('⚠️  LICENCE WARNING: Your ZATCA SDK Pro licence expires in ' + daysUntilExpiry + ' days');
+        console.log('   Renew at /buy.html to avoid production disruption');
+      }
+    }
+    
     if (this.config.environment === 'production') {
       console.log('🚀 Using production ZATCA endpoint');
     }
