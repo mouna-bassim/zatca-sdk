@@ -1,0 +1,57 @@
+{
+  "name": "zatca-phase2-sdk",
+  "version": "1.0.0",
+  "description": "A comprehensive Node.js SDK for generating and submitting legally-valid electronic invoices to the Saudi Arabia Zakat, Tax & Customs Authority (ZATCA) Phase-2 system.",
+  "type": "module",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node examples/demo-simplified.js",
+    "demo": "node examples/demo-simplified.js",
+    "demo:standard": "node examples/demo-standard.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "ZATCA",
+    "e-invoicing",
+    "Saudi Arabia",
+    "Phase 2",
+    "VAT",
+    "UBL",
+    "XML",
+    "digital-signature",
+    "secp256k1",
+    "TLV",
+    "QR-code"
+  ],
+  "author": "ZATCA Phase-2 SDK Team",
+  "license": "MIT",
+  "homepage": "https://github.com/zatca-phase2/sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zatca-phase2/sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zatca-phase2/sdk/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "dotenv": "^17.0.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.3"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    }
+  }
+}

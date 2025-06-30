@@ -1,0 +1,61 @@
+modules = ["nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "ZATCA SDK Demo"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "zatca-demo"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "ZATCA Demo"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "npm start"
+
+[[workflows.workflow]]
+name = "ZATCA SDK Demo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install && npm start"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "zatca-demo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm start"
+
+[[workflows.workflow]]
+name = "ZATCA Demo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node demo.js"
+
+[[workflows.workflow]]
+name = "npm start"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node demo.js"
