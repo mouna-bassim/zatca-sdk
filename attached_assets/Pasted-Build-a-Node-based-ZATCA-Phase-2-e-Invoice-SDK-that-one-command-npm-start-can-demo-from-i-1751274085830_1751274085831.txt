@@ -1,0 +1,52 @@
+Build a Node-based **“ZATCA Phase-2 e-Invoice SDK”** that one command (`npm start`) can demo
+from inside Replit.  The SDK must help Saudi businesses send legally-valid electronic invoices
+to the Zakat, Tax & Customs Authority (ZATCA) *Integration / Clearance* sandbox for Phase 2
+(go-live waves 2023-2026).
+
+────────────────────────────────────────  HIGH-LEVEL GOALS  ────────────────────────────────────────
+1. **Generate device keys & CSR** on the secp256k1 curve, outputting `csr.pem` and `ec-priv.pem`.
+2. **Guide the user** to upload the CSR in ZATCA’s Compliance portal and paste back the returned 
+   **CSID + cert.pem** (manual step because the portal has CAPTCHA).
+3. **Create invoice XML** (UBL-Saudi flavour):
+      • Support *Standard* (B2B/B2G) and *Simplified* (B2C) types.  
+      • Inject mandatory tags: UUID, PreviousInvoiceHash, InvoiceHash, SellerVAT, BuyerVAT,  
+        IssueDateTime (RFC 3339 UTC), LineItems, TaxTotals.  Include ItemType=“S” or “G”
+        where required.  [ZATCA spec §§ 2.4–2.7] :contentReference[oaicite:0]{index=0}
+4. **Cryptographically sign** the XML with the private key and embed the X509 certificate’s
+   serial number and signature into the `<ext:UBLExtensions>` block.
+5. **For Simplified invoices** build a *Base64-encoded TLV QR* containing  
+   ─ Tag-1 SellerName ─ Tag-2 SellerVAT ─ Tag-3 Timestamp ─ Tag-4 TotalWithVAT ─
+   Tag-5 VATAmount.  (QR spec v2.1) 
+6. **Call the Phase-2 sandbox APIs**:
+      • `POST /compliance`   – to verify the certificate (once, optional automated test).  
+      • `POST /clearance/standard`      (for B2B)  
+      • `POST /clearance/simplified`    (for B2C)  
+   Include headers: `Compliance-CSID`, `Clearance-Status: SIMULATION`, and send
+   `Content-Type: application/xml`.  Expect HTTP 200 with `ClearedUUID`,
+   `ReportingStatus=CLEARED`, and an echoed InvoiceHash. :contentReference[oaicite:2]{index=2}
+7. **Return to the caller** an object `{ clearedUUID, invoiceHash, qr, rawResponse }`.
+8. **Ship with**:  
+      • CLI demo (`node examples/demo-simplified.js`) that builds, signs and clears a dummy
+        Simplified invoice worth 100 SAR VAT-inclusive.  
+      • Jest smoke-test that asserts HTTP 200 from the sandbox.  
+      • `.env.example` (VAT number, seller name, cert paths, API base URL).  
+      • Clear README: setup, manual CSR upload, sandbox vs. production, renewal tips.
+9. **Packaging**: mark `"type":"module"` in `package.json`, expose public API:
+   `createCSR`, `loadCertificate`, `buildInvoiceXML`, `signInvoice`, `generateTLVQR`,
+   `submitForClearance`.
+10. **Licence**: MIT; keywords `ZATCA`, `e-invoicing`, `Saudi Arabia`, `Phase 2`.
+
+───────────────────────────────────────  NON-GOALS / OUT-OF-SCOPE  ─────────────────────────────────
+* No UI beyond CLI.  
+* No PDF/A-3 embedding; XML only (user can attach QR PNG themselves).  
+* No production-env certificate automation (portal still manual).  
+* No retry/backoff logic—single call is fine for demo.
+
+Deliver an **NPM-publishable repo** that runs entirely inside Replit’s Node container.
+Provide concise inline JSDoc comments; do not output any HTML or front-end code.
+
+When the user clicks **Run** in Replit, print:
+“✅ CSR ready at ./csr.pem — Upload to ZATCA, paste cert.  
+   ✅ Dummy simplified invoice cleared — ID: <UUID>”.
+
+That’s the spec—generate the code accordingly.
