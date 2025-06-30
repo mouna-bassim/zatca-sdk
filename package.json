@@ -7,31 +7,19 @@
     "packages/core",
     "packages/pro"
   ],
-
   "scripts": {
     "test": "echo \"No root-level tests\"",
     "core-demo": "node packages/core/demo.js",
-    "pro-demo": "node packages/pro/demo.js"
+    "pro-demo": "node packages/pro/demo.js",
+    "start": "node server.js"
   },
-
   "keywords": ["ZATCA", "e-invoice", "Saudi", "UBL", "Phase-2"],
-  "author": "",
+  "author": "Mouna Bassim <mouna@example.com>",
   "license": "ISC",
-
   "dependencies": {
     "chalk": "^5.4.1",
     "dotenv": "^17.0.0",
     "jest": "^30.0.3",
     "uuid": "^11.1.0"
-  },
-
-  "name": "zatca-sdk-monorepo",
-  "private": true,
-  "workspaces": [
-    "packages/core",
-    "packages/pro"
-  ],
-
-
-
+  }
 }
