@@ -45,5 +45,11 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+"name": "zatca-sdk-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/pro"
+  ],
 }
