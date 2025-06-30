@@ -1,11 +1,21 @@
-
 {
   "name": "@zatca-sdk/core",
   "version": "1.0.0",
   "description": "Free ZATCA Phase-2 e-Invoice SDK for Saudi Arabia - sandbox testing and development",
   "type": "module",
   "main": "src/index.js",
-  "keywords": ["zatca", "saudi-arabia", "e-invoice", "vat", "tax", "compliance", "ubl", "xml", "qr-code", "sandbox"],
+  "keywords": [
+    "zatca",
+    "saudi-arabia",
+    "e-invoice",
+    "vat",
+    "tax",
+    "compliance",
+    "ubl",
+    "xml",
+    "qr-code",
+    "sandbox"
+  ],
   "author": "Mouna Bassim <mouna@example.com>",
   "license": "MIT",
   "repository": {
@@ -30,10 +40,8 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "demo": "node demo.js",
-    "test": "jest",
-    "build": "tsc -p .",
-    "prepublishOnly": "npm run build"
+    "build": "echo \"Skipping TypeScript build for JS-only v1.0.0\"",
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest"
   },
   "dependencies": {
     "chalk": "^5.0.0",
