@@ -10,6 +10,9 @@ const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
 
+// Gumroad webhook secret (set in environment)
+const GUMROAD_WEBHOOK_SECRET = process.env.GUMROAD_WEBHOOK_SECRET || 'your-webhook-secret';
+
 const PORT = 5000;
 
 // I18n support
@@ -21,6 +24,229 @@ let currentLang = 'en';
 
 function t(key) {
     return dict[currentLang][key] || key;
+}
+
+// Payment processing functions
+function generateLicenceKey() {
+    const randomBytes = crypto.randomBytes(8);
+    return 'ZSDK' + randomBytes.toString('hex').toUpperCase();
+}
+
+function verifyWebhookSignature(payload, signature) {
+    if (!signature) return false;
+    
+    const expectedSignature = crypto
+        .createHmac('sha256', GUMROAD_WEBHOOK_SECRET)
+        .update(payload)
+        .digest('hex');
+    
+    return crypto.timingSafeEqual(
+        Buffer.from(signature, 'hex'),
+        Buffer.from(expectedSignature, 'hex')
+    );
+}
+
+async function processSale(saleData) {
+    const licenceKey = generateLicenceKey();
+    const purchaseRecord = {
+        id: saleData.id,
+        email: saleData.email,
+        product_name: saleData.product_name,
+        licenceKey: licenceKey,
+        purchaseDate: new Date().toISOString(),
+        amount: saleData.price,
+        currency: saleData.currency || 'USD',
+        status: 'active',
+        expiryDate: null, // Lifetime licence
+        features: [
+            'production_endpoints',
+            'auto_retry',
+            'certificate_monitoring',
+            'priority_support',
+            'typescript_definitions'
+        ]
+    };
+    
+    // Store purchase record
+    const purchasesDir = './data/purchases';
+    try {
+        await fs.mkdir(purchasesDir, { recursive: true });
+        await fs.writeFile(
+            path.join(purchasesDir, `${saleData.id}.json`),
+            JSON.stringify(purchaseRecord, null, 2)
+        );
+    } catch (error) {
+        console.error('Failed to store purchase record:', error);
+    }
+    
+    // Send licence key via console (in production, use email service)
+    console.log(`📧 Licence key generated for ${saleData.email}: ${licenceKey}`);
+    
+    return {
+        success: true,
+        licenceKey: licenceKey,
+        purchaseId: saleData.id,
+        email: saleData.email
+    };
+}
+
+async function processRefund(refundData) {
+    const purchaseFile = `./data/purchases/${refundData.sale_id}.json`;
+    
+    try {
+        const purchaseData = JSON.parse(await fs.readFile(purchaseFile, 'utf8'));
+        purchaseData.status = 'refunded';
+        purchaseData.refundDate = new Date().toISOString();
+        
+        await fs.writeFile(purchaseFile, JSON.stringify(purchaseData, null, 2));
+        
+        return {
+            success: true,
+            licenceKey: purchaseData.licenceKey,
+            status: 'deactivated'
+        };
+    } catch (error) {
+        console.error('Failed to process refund:', error);
+        return { success: false, error: 'Purchase record not found' };
+    }
+}
+
+async function handleGumroadWebhook(body, headers, res) {
+    try {
+        const signature = headers['x-gumroad-signature'];
+        const testMode = headers['x-test-mode'];
+        
+        // Skip signature verification in test mode
+        if (!testMode && !verifyWebhookSignature(body, signature)) {
+            res.statusCode = 401;
+            res.end(JSON.stringify({ error: 'Invalid webhook signature' }));
+            return;
+        }
+        
+        const webhookData = JSON.parse(body);
+        console.log('📥 Gumroad webhook received:', webhookData.type);
+        
+        let result;
+        switch (webhookData.type) {
+            case 'sale':
+                result = await processSale(webhookData);
+                console.log('✅ Sale processed:', result.licenceKey);
+                break;
+                
+            case 'refund':
+                result = await processRefund(webhookData);
+                console.log('🔄 Refund processed:', webhookData.sale_id);
+                break;
+                
+            default:
+                console.log('ℹ️ Unhandled webhook type:', webhookData.type);
+                res.end(JSON.stringify({ received: true }));
+                return;
+        }
+        
+        res.end(JSON.stringify({
+            success: true,
+            processed: webhookData.type,
+            result: result
+        }));
+        
+    } catch (error) {
+        console.error('❌ Webhook processing error:', error);
+        res.statusCode = 500;
+        res.end(JSON.stringify({ 
+            error: 'Internal server error',
+            message: error.message 
+        }));
+    }
+}
+
+async function validateLicenceKey(licenceKey) {
+    if (!licenceKey || !licenceKey.startsWith('ZSDK')) {
+        return { valid: false, error: 'Invalid licence key format' };
+    }
+    
+    try {
+        const purchasesDir = './data/purchases';
+        const files = await fs.readdir(purchasesDir);
+        
+        for (const file of files) {
+            if (!file.endsWith('.json')) continue;
+            
+            const purchaseData = JSON.parse(
+                await fs.readFile(path.join(purchasesDir, file), 'utf8')
+            );
+            
+            if (purchaseData.licenceKey === licenceKey) {
+                if (purchaseData.status === 'active') {
+                    return {
+                        valid: true,
+                        purchaseId: purchaseData.id,
+                        email: purchaseData.email,
+                        features: purchaseData.features,
+                        purchaseDate: purchaseData.purchaseDate
+                    };
+                } else {
+                    return { 
+                        valid: false, 
+                        error: `Licence ${purchaseData.status}` 
+                    };
+                }
+            }
+        }
+        
+        return { valid: false, error: 'Licence key not found' };
+        
+    } catch (error) {
+        console.error('Licence validation error:', error);
+        return { valid: false, error: 'Validation system error' };
+    }
+}
+
+async function getPurchaseStats() {
+    try {
+        const purchasesDir = './data/purchases';
+        const files = await fs.readdir(purchasesDir);
+        
+        let totalSales = 0;
+        let activeLicences = 0;
+        let refundedLicences = 0;
+        let totalRevenue = 0;
+        
+        for (const file of files) {
+            if (!file.endsWith('.json')) continue;
+            
+            const purchaseData = JSON.parse(
+                await fs.readFile(path.join(purchasesDir, file), 'utf8')
+            );
+            
+            totalSales++;
+            totalRevenue += parseFloat(purchaseData.amount || 0);
+            
+            if (purchaseData.status === 'active') {
+                activeLicences++;
+            } else if (purchaseData.status === 'refunded') {
+                refundedLicences++;
+            }
+        }
+        
+        return {
+            totalSales,
+            activeLicences,
+            refundedLicences,
+            totalRevenue,
+            conversionRate: totalSales > 0 ? (activeLicences / totalSales * 100).toFixed(1) : 0
+        };
+        
+    } catch (error) {
+        console.error('Stats error:', error);
+        return {
+            totalSales: 0,
+            activeLicences: 0,
+            refundedLicences: 0,
+            totalRevenue: 0,
+            conversionRate: 0
+        };
+    }
 }
 
 // Simple HTML template
@@ -206,6 +432,11 @@ const HTML_TEMPLATE = `
     <button class="language-toggle" onclick="toggleLanguage()" id="langToggle">العربية</button>
     <div class="container">
         <h1 data-en="🚀 ZATCA Phase-2 e-Invoice SDK Testing" data-ar="🚀 اختبار حلول الفوترة الإلكترونية المرحلة الثانية - هيئة الزكاة والضريبة والجمارك">🚀 ZATCA Phase-2 e-Invoice SDK Testing</h1>
+        
+        <div style="text-align: center; margin: 1rem 0;">
+            <a href="docs/buy.html" style="margin: 0 0.5rem; padding: 0.5rem 1rem; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">🔓 Get Pro Licence</a>
+            <a href="docs/admin.html" style="margin: 0 0.5rem; padding: 0.5rem 1rem; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">🛡️ Admin Dashboard</a>
+        </div>
         
         <div class="premium-banner">
             <h3 data-en="🔓 Production Mode Available" data-ar="🔓 وضع الإنتاج متاح">🔓 Production Mode Available</h3>
@@ -693,6 +924,45 @@ async function handleAPI(req, res, pathname) {
                     fullOutput: output
                 }));
             });
+
+        } else if (pathname === '/api/gumroad/webhook') {
+            // Handle Gumroad webhook for payment processing
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+                try {
+                    await handleGumroadWebhook(body, req.headers, res);
+                } catch (error) {
+                    console.error('Webhook error:', error);
+                    res.statusCode = 500;
+                    res.end(JSON.stringify({ error: 'Webhook processing failed' }));
+                }
+            });
+
+        } else if (pathname === '/api/validate-licence') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+                try {
+                    const { licenceKey } = JSON.parse(body);
+                    const validation = await validateLicenceKey(licenceKey);
+                    res.end(JSON.stringify(validation));
+                } catch (error) {
+                    res.end(JSON.stringify({ 
+                        valid: false, 
+                        error: 'Validation failed' 
+                    }));
+                }
+            });
+
+        } else if (pathname === '/api/purchase-stats') {
+            try {
+                const stats = await getPurchaseStats();
+                res.end(JSON.stringify(stats));
+            } catch (error) {
+                res.statusCode = 500;
+                res.end(JSON.stringify({ error: 'Failed to get stats' }));
+            }
 
         } else {
             res.statusCode = 404;

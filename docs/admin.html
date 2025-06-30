@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZATCA SDK Admin Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #2d3748;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2b6cb0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .tools {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .tool-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .tool-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .tool-section h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        .btn {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: #2c5282;
+        }
+        
+        .btn-secondary {
+            background: #718096;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+        
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .result.success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+        }
+        
+        .result.error {
+            background: #fed7d7;
+            border: 1px solid #fc8181;
+            color: #742a2a;
+        }
+        
+        .licence-info {
+            background: #edf2f7;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+        
+        .licence-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: #2d3748;
+        }
+        
+        .licence-info p {
+            margin: 0.25rem 0;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ ZATCA SDK Admin Dashboard</h1>
+            <p>Monitor purchases, test webhooks, and validate licence keys</p>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalSales">-</div>
+                <div class="stat-label">Total Sales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeLicences">-</div>
+                <div class="stat-label">Active Licences</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalRevenue">-</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="conversionRate">-</div>
+                <div class="stat-label">Conversion Rate</div>
+            </div>
+        </div>
+        
+        <div class="tools">
+            <div class="tool-section">
+                <h3>🔍 Licence Key Validation</h3>
+                <div class="form-group">
+                    <label for="licenceKey">Licence Key:</label>
+                    <input type="text" id="licenceKey" placeholder="ZSDK1234567890ABCDEF" maxlength="20">
+                </div>
+                <button class="btn" onclick="validateLicence()">Validate Licence</button>
+                <div id="licenceResult"></div>
+            </div>
+            
+            <div class="tool-section">
+                <h3>🎯 Test Webhook</h3>
+                <p>Simulate a Gumroad webhook to test the payment processing system.</p>
+                <div class="form-group">
+                    <label for="webhookPayload">Webhook Payload (JSON):</label>
+                    <textarea id="webhookPayload" placeholder='{"type": "sale", "id": "test-123", "email": "test@example.com", "product_name": "ZATCA SDK Pro", "price": "29", "currency": "USD"}'></textarea>
+                </div>
+                <button class="btn" onclick="testWebhook()">Test Webhook</button>
+                <button class="btn btn-secondary" onclick="loadSamplePayload()">Load Sample</button>
+                <div id="webhookResult"></div>
+            </div>
+            
+            <div class="tool-section">
+                <h3>🔗 Gumroad Integration</h3>
+                <div class="licence-info">
+                    <h4>Webhook Configuration</h4>
+                    <p><strong>Endpoint:</strong> <code>POST https://your-domain.com/api/gumroad/webhook</code></p>
+                    <p><strong>Product URL:</strong> <a href="https://mounabsm.gumroad.com/l/zydki" target="_blank">https://mounabsm.gumroad.com/l/zydki</a></p>
+                    <p><strong>Secret Key:</strong> Set <code>GUMROAD_WEBHOOK_SECRET</code> environment variable</p>
+                    <p><strong>Events:</strong> sale, refund, dispute</p>
+                </div>
+                <button class="btn" onclick="window.open('https://mounabsm.gumroad.com/l/zydki', '_blank')">Open Product Page</button>
+                <button class="btn btn-secondary" onclick="refreshStats()">Refresh Stats</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/purchase-stats');
+                const stats = await response.json();
+                
+                document.getElementById('totalSales').textContent = stats.totalSales;
+                document.getElementById('activeLicences').textContent = stats.activeLicences;
+                document.getElementById('totalRevenue').textContent = '$' + stats.totalRevenue.toFixed(2);
+                document.getElementById('conversionRate').textContent = stats.conversionRate + '%';
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+        
+        async function validateLicence() {
+            const licenceKey = document.getElementById('licenceKey').value;
+            if (!licenceKey) return;
+            
+            const result = await makeRequest('/api/validate-licence', {
+                body: JSON.stringify({ licenceKey })
+            });
+            
+            const resultDiv = document.getElementById('licenceResult');
+            
+            if (result.valid) {
+                resultDiv.innerHTML = `
+                    <div class="result success">✅ Valid Licence Key
+                    
+Purchase ID: ${result.purchaseId}
+Email: ${result.email}
+Purchase Date: ${new Date(result.purchaseDate).toLocaleDateString()}
+Features: ${result.features.join(', ')}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result error">❌ Invalid Licence Key
+                    
+Error: ${result.error}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testWebhook() {
+            const payload = document.getElementById('webhookPayload').value;
+            if (!payload) return;
+            
+            try {
+                const webhookData = JSON.parse(payload);
+                
+                const response = await fetch('/api/gumroad/webhook', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Skip signature verification for testing
+                        'X-Test-Mode': 'true'
+                    },
+                    body: payload
+                });
+                
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('webhookResult');
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">✅ Webhook Processed Successfully
+                        
+Type: ${result.processed}
+${result.result.licenceKey ? 'Licence Key: ' + result.result.licenceKey : ''}
+${result.result.email ? 'Email: ' + result.result.email : ''}
+                        </div>
+                    `;
+                    loadStats(); // Refresh stats
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">❌ Webhook Failed
+                        
+Error: ${result.error}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('webhookResult').innerHTML = `
+                    <div class="result error">❌ JSON Parse Error
+                    
+${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function loadSamplePayload() {
+            const samplePayload = {
+                type: "sale",
+                id: "test-" + Date.now(),
+                email: "customer@example.com",
+                product_name: "ZATCA SDK Pro",
+                price: "29",
+                currency: "USD"
+            };
+            
+            document.getElementById('webhookPayload').value = JSON.stringify(samplePayload, null, 2);
+        }
+        
+        function refreshStats() {
+            loadStats();
+        }
+        
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</body>
+</html>
