@@ -1,0 +1,75 @@
+🎯  GOAL
+Convert the current monorepo (Core + Pro) into production-ready npm packages
+and prep the repo for public launch:
+
+• Push the repo to GitHub (remote: git@github.com:mouna-bassim/zatca-sdk.git).
+• Publish @zatca-sdk/core to the public npm registry.
+• Publish @zatca-sdk/pro to GitHub Packages (private scope).
+• Add a GitHub-Actions workflow that re-publishes Core on every semver Git tag.
+• Leave a stub webhook endpoint that future licence-delivery can call.
+• Keep the existing demo UI, but host it only as a marketing sandbox (not shipped with npm).
+
+────────────────────────────  TASK CHECKLIST  ────────────────────────────
+1. **Git setup**
+   ∘ Initialise Git if missing and add remote  
+     `git@github.com:mouna-bassim/zatca-sdk.git`.  
+   ∘ Create `.gitignore` covering node_modules, .env, certs, *.pem.
+
+2. **Package metadata**
+   ∘ Update `packages/core/package.json`:
+        name, description, MIT licence, repository link
+        `"files": ["dist","src"]`.
+   ∘ Update `packages/pro/package.json`:
+        name, `"private": true`, `"license":"Commercial"`, repository link,
+        internal .npmrc that points to `https://npm.pkg.github.com/`.
+
+3. **Publish scripts**
+   In both `package.json`s add:
+     `"scripts": { "build": "tsc -p .", "prepublishOnly": "npm run build" }`
+
+4. **CI workflow**
+   Place `.github/workflows/publish-core.yml` that:
+     • triggers on Git tag `v*`
+     • sets up Node 18
+     • runs `npm ci -w packages/core`
+     • executes `npm publish --access public -w packages/core`
+     • uses secret `${{ secrets.NPM_TOKEN }}`.
+
+5. **Licence webhook stub**
+   Create folder `webhooks/gumroad/`
+     • `README.md` explaining Gumroad ping payload.
+     • `handler.todo.js` with TODO comments and empty Express router.
+
+6. **Demo UI**
+   ∘ Move Express demo to `/demo/` with README.  
+   ∘ Add note in root README:  
+      “Hosted demo → https://replit.com/@mouna-bassim/zatca-sdk”.  
+   ∘ Exclude `/demo` via npm `"files"` so it never publishes.
+
+7. **Post-install hint**
+   Root-level `postinstall.js` prints:  
+     ✅  “Run *npm run core-demo* to clear a sandbox invoice.”  
+     🔓  “Unlock production: *npm run pro-demo -- --licence ZSDK…*”.
+
+8. **Docs placeholders**
+   ∘ `/docs/buy.html` → button linking to `https://yourname.gumroad.com/l/zatca-pro`.  
+   ∘ `/docs/quick-start.md` → headings: Install Core · Get Key · Install Pro.
+
+9. **Version tagging note**
+   At bottom of root README:  
+   “Tag releases with **git tag v1.0.0 && git push --tags** to trigger publish.”
+
+────────────────────────────  CONSTRAINTS  ───────────────────────────────
+• Do **not** run `npm publish`, `npm login`, or push to Git—leave TODO comments.
+• Insert placeholders (`yourname`, tokens) where real secrets are needed.
+• Make all new files and edits directly in the project; do not output raw bash or YAML here.
+
+────────────────────────────  SUCCESS SIGNAL  ────────────────────────────
+When **Run** executes:
+  1. Installs workspaces.
+  2. Executes `core-demo` → prints  
+     “✅ Sandbox demo succeeded — invoice CLEARED”.
+  3. Prints  
+     “🔓 Unlock production: npm run pro-demo -- --licence ZSDK…”.
+
+Generate all folders, files, scripts, and comments accordingly.

@@ -1,22 +1,46 @@
 {
   "name": "@zatca-sdk/pro",
   "version": "1.0.0",
-  "description": "ZATCA Phase-2 e-Invoice SDK - Premium Production Tier",
+  "description": "Premium ZATCA Phase-2 e-Invoice SDK for Saudi Arabia - production endpoints and enterprise features",
   "type": "module",
   "main": "src/index.js",
+  "private": true,
+  "keywords": ["zatca", "saudi-arabia", "e-invoice", "production", "premium", "enterprise"],
+  "author": "Mouna Bassim <mouna@example.com>",
+  "license": "Commercial",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mouna-bassim/zatca-sdk.git",
+    "directory": "packages/pro"
+  },
+  "bugs": {
+    "url": "https://github.com/mouna-bassim/zatca-sdk/issues"
+  },
+  "homepage": "https://github.com/mouna-bassim/zatca-sdk#readme",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "demo": "node demo.js",
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc -p .",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": ["zatca", "saudi", "e-invoice", "production", "premium"],
-  "author": "ZATCA SDK Team",
-  "license": "MIT",
   "dependencies": {
     "@zatca-sdk/core": "^1.0.0",
     "chalk": "^5.0.0",
     "dotenv": "^16.0.0"
   },
   "devDependencies": {
-    "jest": "^29.0.0"
+    "jest": "^29.0.0",
+    "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   }
 }

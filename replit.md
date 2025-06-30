@@ -122,18 +122,18 @@ Changelog:
 - June 30, 2025. Successfully implemented complete ZATCA Phase-2 e-Invoice SDK with working demo
 
 Recent Changes:
-- **MAJOR RESTRUCTURE**: Transformed into freemium/premium monorepo architecture
-- **Enhanced Developer Experience**: Added ASCII timeline, copy-paste snippets, post-install doctor script
-- **Doctor Script**: npx zatca-sdk doctor validates Node ≥18, OpenSSL secp256k1, ZATCA connectivity
-- **Premium Licence Management**: Expiry warnings (X-ZSDK-Expires-In header), offline activation support
-- **Security & Trust**: Security audit commands, live status badges, ZATCA compliance indicators
-- **Improved Documentation**: CSID explanation, syntax highlighting, copy-paste command blocks
-- **Core Package (@zatca-sdk/core)**: Free sandbox tier with simulation endpoints only
-- **Pro Package (@zatca-sdk/pro)**: Premium production tier with licence validation
-- **Business Model**: Freemium model with clear upgrade path to production features
-- **Licence System**: ZSDK-prefixed tokens with CLI and environment variable support
-- **Premium Features**: Production endpoints, auto-retry, certificate monitoring, TypeScript definitions
-- **Web UI**: Updated with premium upgrade banner and bilingual support
+- **PRODUCTION TRANSFORMATION**: Converted monorepo into production-ready npm packages
+- **Package Publishing**: Core package ready for npm registry, Pro package configured for GitHub Packages
+- **CI/CD Pipeline**: GitHub Actions workflow for automated publishing on git tag releases
+- **Gumroad Integration**: Complete payment system with webhook handlers and licence generation
+- **Demo Environment**: Separated marketing demo from production packages (/demo directory)
+- **Workspace Structure**: Proper npm workspaces with TypeScript build configurations
+- **Post-Install Experience**: Helpful hints and command suggestions after npm install
+- **Documentation**: Quick-start guide and comprehensive GitHub repository setup
+- **Version Management**: Automated publishing triggered by git tag v*.* releases
+- **Core Package (@zatca-sdk/core)**: Production-ready with proper metadata and build scripts
+- **Pro Package (@zatca-sdk/pro)**: GitHub Packages distribution with commercial licensing
+- **Webhook Stubs**: Future-ready payment integration infrastructure
 
 User Preferences:
 Preferred communication style: Simple, everyday language.

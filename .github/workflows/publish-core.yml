@@ -1,0 +1,66 @@
+name: Publish Core Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-core:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+          
+      - name: Install dependencies
+        run: npm ci -w packages/core
+        
+      - name: Run tests
+        run: npm test -w packages/core
+        
+      - name: Build package
+        run: npm run build -w packages/core
+        
+      - name: Publish to npm
+        run: npm publish --access public -w packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
+      - name: Create GitHub release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ZATCA SDK v${{ github.ref }}
+          body: |
+            ## What's Changed
+            
+            - Core package published to npm as @zatca-sdk/core
+            - Sandbox ZATCA Phase-2 e-invoicing support
+            - UBL XML generation and TLV QR code support
+            - Cryptographic operations with secp256k1
+            
+            ## Installation
+            
+            ```bash
+            npm install @zatca-sdk/core
+            ```
+            
+            ## Quick Start
+            
+            ```bash
+            npx zatca-sdk doctor
+            npm run core-demo
+            ```
+            
+            Full documentation: https://github.com/mouna-bassim/zatca-sdk
+          draft: false
+          prerelease: false

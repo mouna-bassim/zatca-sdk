@@ -225,6 +225,14 @@ openssl ec -in ec-priv.pem -text -noout | head -5
 - **Documentation:** Comprehensive guides and examples
 - **Updates:** Automatic ZATCA specification compliance
 
+## 🚀 Release Management
+
+Tag releases with **git tag v1.0.0 && git push --tags** to trigger automatic publishing of the Core package to npm.
+
+### Demo Environment
+
+**Hosted demo →** https://replit.com/@mouna-bassim/zatca-sdk
+
 ---
 
 **Ready to go live in Saudi Arabia?** 
