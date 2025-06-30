@@ -67,4 +67,4 @@ jobs:
             
             Full documentation: https://github.com/mouna-bassim/zatca-sdk
           draft: false
-          prerelease: false
+          prerelease: false 
