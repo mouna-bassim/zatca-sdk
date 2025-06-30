@@ -129,6 +129,7 @@ Recent Changes:
 - Successfully demonstrated full workflow from credential generation to invoice clearance simulation
 - Created CommonJS-compatible demo script to work with current Node.js configuration
 - Added minimal web UI on port 5000 for testing CSR upload and certificate management workflow
+- Implemented Arabic ⇄ English language toggle for bilingual support in web interface
 
 User Preferences:
 Preferred communication style: Simple, everyday language.

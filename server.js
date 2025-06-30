@@ -130,110 +130,141 @@ const HTML_TEMPLATE = `
             gap: 10px;
             flex-wrap: wrap;
         }
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .language-toggle:hover {
+            background: #2c5282;
+        }
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+        .rtl .container {
+            text-align: right;
+        }
+        .rtl h1, .rtl h2 {
+            text-align: right;
+        }
+        .rtl .actions {
+            justify-content: flex-end;
+        }
     </style>
 </head>
 <body>
+    <button class="language-toggle" onclick="toggleLanguage()" id="langToggle">العربية</button>
     <div class="container">
-        <h1>🚀 ZATCA Phase-2 e-Invoice SDK Testing</h1>
+        <h1 data-en="🚀 ZATCA Phase-2 e-Invoice SDK Testing" data-ar="🚀 اختبار حلول الفوترة الإلكترونية المرحلة الثانية - هيئة الزكاة والضريبة والجمارك">🚀 ZATCA Phase-2 e-Invoice SDK Testing</h1>
         
         <!-- Step 1: Generate CSR -->
         <div class="section">
-            <h2>Step 1: Generate Device Credentials</h2>
-            <p>Generate secp256k1 private key and Certificate Signing Request (CSR)</p>
+            <h2 data-en="Step 1: Generate Device Credentials" data-ar="الخطوة الأولى: إنتاج بيانات اعتماد الجهاز">Step 1: Generate Device Credentials</h2>
+            <p data-en="Generate secp256k1 private key and Certificate Signing Request (CSR)" data-ar="إنتاج مفتاح خاص secp256k1 وطلب توقيع الشهادة (CSR)">Generate secp256k1 private key and Certificate Signing Request (CSR)</p>
             <div class="actions">
-                <button onclick="generateCSR()" id="generateBtn">Generate CSR & Private Key</button>
-                <button onclick="runDemo()" id="demoBtn">Run Full Demo</button>
+                <button onclick="generateCSR()" id="generateBtn" data-en="Generate CSR & Private Key" data-ar="إنتاج CSR والمفتاح الخاص">Generate CSR & Private Key</button>
+                <button onclick="runDemo()" id="demoBtn" data-en="Run Full Demo" data-ar="تشغيل العرض التوضيحي الكامل">Run Full Demo</button>
             </div>
             <div id="generateResult"></div>
         </div>
 
         <!-- Step 2: Show CSR -->
         <div class="section">
-            <h2>Step 2: Certificate Signing Request (CSR)</h2>
+            <h2 data-en="Step 2: Certificate Signing Request (CSR)" data-ar="الخطوة الثانية: طلب توقيع الشهادة (CSR)">Step 2: Certificate Signing Request (CSR)</h2>
             <div class="info">
-                <strong>Why CSR & Certificate Matter:</strong><br>
-                • Device keys + CSR are generated automatically (see csr.pem, ec-priv.pem)<br>
-                • Upload CSR to ZATCA portal → ZATCA returns certificate + CSID<br>
-                • Certificate proves device identity; CSID is how ZATCA recognizes your certificate<br>
-                • Without these, SDK can't sign invoices or call real endpoints
+                <strong data-en="Why CSR & Certificate Matter:" data-ar="لماذا CSR والشهادة مهمان:">Why CSR & Certificate Matter:</strong><br>
+                <span data-en="• Device keys + CSR are generated automatically (see csr.pem, ec-priv.pem)" data-ar="• مفاتيح الجهاز + CSR يتم إنتاجهما تلقائيًا (انظر csr.pem, ec-priv.pem)">• Device keys + CSR are generated automatically (see csr.pem, ec-priv.pem)</span><br>
+                <span data-en="• Upload CSR to ZATCA portal → ZATCA returns certificate + CSID" data-ar="• رفع CSR إلى بوابة الزكاة والضريبة والجمارك ← ترجع الشهادة + CSID">• Upload CSR to ZATCA portal → ZATCA returns certificate + CSID</span><br>
+                <span data-en="• Certificate proves device identity; CSID is how ZATCA recognizes your certificate" data-ar="• الشهادة تثبت هوية الجهاز؛ CSID هو كيف تتعرف الهيئة على شهادتك">• Certificate proves device identity; CSID is how ZATCA recognizes your certificate</span><br>
+                <span data-en="• Without these, SDK can't sign invoices or call real endpoints" data-ar="• بدون هذين، لا يمكن للـ SDK توقيع الفواتير أو استدعاء نقاط النهاية الحقيقية">• Without these, SDK can't sign invoices or call real endpoints</span>
             </div>
-            <p><strong>Next Step:</strong> Upload this CSR to ZATCA Compliance Simulation Portal</p>
-            <div id="csrContent" class="file-content">Click "Generate CSR" to create credentials</div>
+            <p><strong data-en="Next Step:" data-ar="الخطوة التالية:">Next Step:</strong> <span data-en="Upload this CSR to ZATCA Compliance Simulation Portal" data-ar="رفع هذا CSR إلى بوابة محاكاة الامتثال للزكاة والضريبة والجمارك">Upload this CSR to ZATCA Compliance Simulation Portal</span></p>
+            <div id="csrContent" class="file-content" data-en="Click 'Generate CSR' to create credentials" data-ar="انقر على 'إنتاج CSR' لإنشاء بيانات الاعتماد">Click "Generate CSR" to create credentials</div>
         </div>
 
         <!-- Step 3: Certificate Upload -->
         <div class="section">
-            <h2>Step 3: Upload Certificate & CSID</h2>
-            <p>After downloading the certificate from ZATCA portal, paste it here along with the CSID</p>
+            <h2 data-en="Step 3: Upload Certificate & CSID" data-ar="الخطوة الثالثة: رفع الشهادة و CSID">Step 3: Upload Certificate & CSID</h2>
+            <p data-en="After downloading the certificate from ZATCA portal, paste it here along with the CSID" data-ar="بعد تحميل الشهادة من بوابة الزكاة والضريبة والجمارك، الصقها هنا مع CSID">After downloading the certificate from ZATCA portal, paste it here along with the CSID</p>
             
             <div class="form-group">
-                <label for="csid">CSID (Compliance Secure ID):</label>
-                <input type="text" id="csid" placeholder="Enter CSID from ZATCA portal">
+                <label for="csid" data-en="CSID (Compliance Secure ID):" data-ar="CSID (معرف الأمان للامتثال):">CSID (Compliance Secure ID):</label>
+                <input type="text" id="csid" data-en="Enter CSID from ZATCA portal" data-ar="أدخل CSID من بوابة الزكاة والضريبة والجمارك" placeholder="Enter CSID from ZATCA portal">
             </div>
             
             <div class="form-group">
-                <label for="certificate">Certificate (PEM format):</label>
-                <textarea id="certificate" placeholder="Paste certificate content here (-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----)"></textarea>
+                <label for="certificate" data-en="Certificate (PEM format):" data-ar="الشهادة (تنسيق PEM):">Certificate (PEM format):</label>
+                <textarea id="certificate" data-en="Paste certificate content here (-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----)" data-ar="الصق محتوى الشهادة هنا (-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----)" placeholder="Paste certificate content here (-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----)"></textarea>
             </div>
             
-            <button onclick="saveCertificate()">Save Certificate & CSID</button>
+            <button onclick="saveCertificate()" data-en="Save Certificate & CSID" data-ar="حفظ الشهادة و CSID">Save Certificate & CSID</button>
             <div id="certificateResult"></div>
         </div>
 
         <!-- Step 4: Test Invoice -->
         <div class="section">
-            <h2>Step 4: Test Invoice Generation & Clearance</h2>
-            <p>Test the complete invoice workflow with real ZATCA API</p>
+            <h2 data-en="Step 4: Test Invoice Generation & Clearance" data-ar="الخطوة الرابعة: اختبار إنتاج الفاتورة والمقاصة">Step 4: Test Invoice Generation & Clearance</h2>
+            <p data-en="Test the complete invoice workflow with real ZATCA API" data-ar="اختبار سير عمل الفاتورة الكامل مع واجهة برمجة التطبيقات الحقيقية للزكاة والضريبة والجمارك">Test the complete invoice workflow with real ZATCA API</p>
             
             <div class="form-group">
-                <label for="invoiceAmount">Invoice Amount (SAR):</label>
+                <label for="invoiceAmount" data-en="Invoice Amount (SAR):" data-ar="مبلغ الفاتورة (ريال سعودي):">Invoice Amount (SAR):</label>
                 <input type="number" id="invoiceAmount" value="100.00" step="0.01" min="0.01">
             </div>
             
             <div class="form-group">
-                <label for="sellerName">Seller Name:</label>
-                <input type="text" id="sellerName" value="Test Company Ltd">
+                <label for="sellerName" data-en="Seller Name:" data-ar="اسم البائع:">Seller Name:</label>
+                <input type="text" id="sellerName" value="Test Company Ltd" data-en="Test Company Ltd" data-ar="شركة الاختبار المحدودة">
             </div>
             
             <div class="form-group">
-                <label for="vatNumber">VAT Number (15 digits):</label>
-                <input type="text" id="vatNumber" value="312345678900003" pattern="[0-9]{15}" placeholder="e.g. 312345678900003 for simplified">
+                <label for="vatNumber" data-en="VAT Number (15 digits):" data-ar="الرقم الضريبي (15 رقم):">VAT Number (15 digits):</label>
+                <input type="text" id="vatNumber" value="312345678900003" pattern="[0-9]{15}" data-en="e.g. 312345678900003 for simplified" data-ar="مثال: 312345678900003 للفاتورة المبسطة" placeholder="e.g. 312345678900003 for simplified">
             </div>
             
             <div class="actions">
-                <button onclick="testInvoice('simplified')">Test Simplified Invoice</button>
-                <button onclick="testInvoice('standard')">Test Standard Invoice</button>
+                <button onclick="testInvoice('simplified')" data-en="Test Simplified Invoice" data-ar="اختبار الفاتورة المبسطة">Test Simplified Invoice</button>
+                <button onclick="testInvoice('standard')" data-en="Test Standard Invoice" data-ar="اختبار الفاتورة القياسية">Test Standard Invoice</button>
             </div>
             <div id="invoiceResult"></div>
         </div>
 
         <!-- Demo Results -->
         <div class="section">
-            <h2>Demo Results</h2>
+            <h2 data-en="Demo Results" data-ar="نتائج العرض التوضيحي">Demo Results</h2>
             <div id="demoResults"></div>
         </div>
 
         <!-- Troubleshooting Guide -->
         <div class="section">
-            <h2>🔧 Troubleshooting Common Errors</h2>
+            <h2 data-en="🔧 Troubleshooting Common Errors" data-ar="🔧 حل الأخطاء الشائعة">🔧 Troubleshooting Common Errors</h2>
             <div class="info">
-                <strong>Typical Errors & Quick Fixes:</strong><br><br>
-                <strong>403 INVALID_CSID</strong> → CSID field empty or contains typo<br>
-                <em>Fix:</em> Re-paste the CSID exactly as shown in the portal<br><br>
+                <strong data-en="Typical Errors & Quick Fixes:" data-ar="الأخطاء الشائعة والحلول السريعة:">Typical Errors & Quick Fixes:</strong><br><br>
+                <strong>403 INVALID_CSID</strong> <span data-en="→ CSID field empty or contains typo" data-ar="← حقل CSID فارغ أو يحتوي على خطأ إملائي">→ CSID field empty or contains typo</span><br>
+                <em data-en="Fix:" data-ar="الحل:">Fix:</em> <span data-en="Re-paste the CSID exactly as shown in the portal" data-ar="أعد لصق CSID بالضبط كما هو معروض في البوابة">Re-paste the CSID exactly as shown in the portal</span><br><br>
                 
-                <strong>400 INVALID_SIGNATURE</strong> → Wrong private key or mismatched cert<br>
-                <em>Fix:</em> Make sure cert.pem and ec-priv.pem belong to the same key-pair; regenerate CSR if needed<br><br>
+                <strong>400 INVALID_SIGNATURE</strong> <span data-en="→ Wrong private key or mismatched cert" data-ar="← مفتاح خاص خاطئ أو شهادة غير متطابقة">→ Wrong private key or mismatched cert</span><br>
+                <em data-en="Fix:" data-ar="الحل:">Fix:</em> <span data-en="Make sure cert.pem and ec-priv.pem belong to the same key-pair; regenerate CSR if needed" data-ar="تأكد من أن cert.pem و ec-priv.pem ينتميان لنفس زوج المفاتيح؛ أعد إنتاج CSR إذا لزم الأمر">Make sure cert.pem and ec-priv.pem belong to the same key-pair; regenerate CSR if needed</span><br><br>
                 
-                <strong>422 XML_VALIDATION_FAILED</strong> → Missing mandatory UBL tag<br>
-                <em>Fix:</em> Check form fields—seller VAT must be 15 digits<br><br>
+                <strong>422 XML_VALIDATION_FAILED</strong> <span data-en="→ Missing mandatory UBL tag" data-ar="← علامة UBL إلزامية مفقودة">→ Missing mandatory UBL tag</span><br>
+                <em data-en="Fix:" data-ar="الحل:">Fix:</em> <span data-en="Check form fields—seller VAT must be 15 digits" data-ar="تحقق من حقول النموذج - الرقم الضريبي للبائع يجب أن يكون 15 رقمًا">Check form fields—seller VAT must be 15 digits</span><br><br>
                 
-                <strong>End-to-End Test Checklist:</strong><br>
-                1. Generate CSR (done automatically)<br>
-                2. Upload to ZATCA Compliance Simulation site<br>
-                3. Download cert.pem + copy CSID<br>
-                4. Paste both into Step 3 form and Save<br>
-                5. Use test VAT: 312345678900003 (simplified) or 311111111100003 (standard)<br>
-                6. Click Test button and watch for HTTP 200 + ReportingStatus=CLEARED
+                <strong data-en="End-to-End Test Checklist:" data-ar="قائمة مراجعة الاختبار الشامل:">End-to-End Test Checklist:</strong><br>
+                <span data-en="1. Generate CSR (done automatically)" data-ar="1. إنتاج CSR (يتم تلقائيًا)">1. Generate CSR (done automatically)</span><br>
+                <span data-en="2. Upload to ZATCA Compliance Simulation site" data-ar="2. رفع إلى موقع محاكاة الامتثال للزكاة والضريبة والجمارك">2. Upload to ZATCA Compliance Simulation site</span><br>
+                <span data-en="3. Download cert.pem + copy CSID" data-ar="3. تحميل cert.pem + نسخ CSID">3. Download cert.pem + copy CSID</span><br>
+                <span data-en="4. Paste both into Step 3 form and Save" data-ar="4. لصق كليهما في نموذج الخطوة 3 والحفظ">4. Paste both into Step 3 form and Save</span><br>
+                <span data-en="5. Use test VAT: 312345678900003 (simplified) or 311111111100003 (standard)" data-ar="5. استخدم الرقم الضريبي التجريبي: 312345678900003 (مبسط) أو 311111111100003 (قياسي)">5. Use test VAT: 312345678900003 (simplified) or 311111111100003 (standard)</span><br>
+                <span data-en="6. Click Test button and watch for HTTP 200 + ReportingStatus=CLEARED" data-ar="6. انقر على زر الاختبار وراقب HTTP 200 + ReportingStatus=CLEARED">6. Click Test button and watch for HTTP 200 + ReportingStatus=CLEARED</span>
             </div>
         </div>
     </div>
@@ -359,6 +390,46 @@ const HTML_TEMPLATE = `
             
             btn.disabled = false;
             btn.textContent = 'Run Full Demo';
+        }
+
+        // Language toggle functionality
+        let currentLanguage = 'en';
+        
+        window.toggleLanguage = function() {
+            currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
+            const langToggle = document.getElementById('langToggle');
+            const body = document.body;
+            
+            if (currentLanguage === 'ar') {
+                langToggle.textContent = 'English';
+                body.classList.add('rtl');
+                body.setAttribute('dir', 'rtl');
+            } else {
+                langToggle.textContent = 'العربية';
+                body.classList.remove('rtl');
+                body.setAttribute('dir', 'ltr');
+            }
+            
+            // Update all elements with data-lang attributes
+            const elements = document.querySelectorAll('[data-en], [data-ar]');
+            elements.forEach(element => {
+                const text = element.getAttribute('data-' + currentLanguage);
+                if (text) {
+                    if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
+                        if (element.hasAttribute('data-' + currentLanguage)) {
+                            element.placeholder = text;
+                        }
+                    } else if (element.tagName === 'INPUT' && element.type === 'button') {
+                        element.value = text;
+                    } else if (element.tagName === 'BUTTON') {
+                        element.textContent = text;
+                    } else if (element.tagName === 'TEXTAREA') {
+                        element.placeholder = text;
+                    } else {
+                        element.innerHTML = text;
+                    }
+                }
+            });
         }
 
         // Load existing CSR on page load
