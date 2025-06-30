@@ -1,18 +1,23 @@
 {
-  "name": "workspace",
+  "name": "zatca-sdk-monorepo",
+  "private": true,
   "version": "1.0.0",
   "description": "A comprehensive Node.js SDK for generating and submitting legally-valid electronic invoices to the Saudi Arabia Zakat, Tax & Customs Authority (ZATCA) Phase-2 system.",
-  "main": "index.js",
-  "directories": {
-    "example": "examples",
-    "test": "tests"
-  },
+  "workspaces": [
+    "packages/core",
+    "packages/pro"
+  ],
+
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No root-level tests\"",
+    "core-demo": "node packages/core/demo.js",
+    "pro-demo": "node packages/pro/demo.js"
   },
-  "keywords": [],
+
+  "keywords": ["ZATCA", "e-invoice", "Saudi", "UBL", "Phase-2"],
   "author": "",
   "license": "ISC",
+
   "dependencies": {
     "chalk": "^5.4.1",
     "dotenv": "^17.0.0",
