@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   publish-core:
@@ -17,6 +18,12 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
+      
+      # Debug: Show current workflow file
+      - name: Debug - Show workflow file
+        run: |
+          echo "Current workflow file content:"
+          cat .github/workflows/publish-core.yml | grep -A 2 "Install dependencies"
           
       # IMPORTANT: Just run npm ci without any workspace flags
       - name: Install dependencies
@@ -67,4 +74,4 @@ jobs:
             
             Full documentation: https://github.com/mouna-bassim/zatca-sdk
           draft: false
-          prerelease: false 
+          prerelease: false
