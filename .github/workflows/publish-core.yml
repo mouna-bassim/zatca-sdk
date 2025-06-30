@@ -21,19 +21,16 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           
       - name: Install dependencies
-        run: |
-          npm ci
-          cd packages/core
-          npm ci
+        run: npm ci
         
       - name: Run tests
-        run: npm test -w packages/core
+        run: npm run test --workspace=packages/core
         
       - name: Build package
-        run: npm run build -w packages/core
+        run: npm run build --workspace=packages/core
         
       - name: Publish to npm
-        run: npm publish --access public -w packages/core
+        run: npm publish --access public --workspace=packages/core
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           
