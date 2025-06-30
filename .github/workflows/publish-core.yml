@@ -1,6 +1,4 @@
-
 name: Publish Core Package
-
 on:
   push:
     tags:
@@ -20,17 +18,20 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
           
-      - name: Install dependencies
+      - name: Install all dependencies
         run: npm ci
         
-      - name: Run tests
-        run: npm run test --workspace=packages/core
+      - name: Run tests in core package
+        working-directory: ./packages/core
+        run: npm test
         
-      - name: Build package
-        run: npm run build --workspace=packages/core
+      - name: Build core package
+        working-directory: ./packages/core
+        run: npm run build
         
-      - name: Publish to npm
-        run: npm publish --access public --workspace=packages/core
+      - name: Publish to npm from core directory
+        working-directory: ./packages/core
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           
@@ -40,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: ZATCA SDK v${{ github.ref }}
+          release_name: ZATCA SDK ${{ github.ref }}
           body: |
             ## What's Changed
             
