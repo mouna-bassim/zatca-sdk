@@ -4,10 +4,12 @@ on:
     tags:
       - 'v*'
 
-  permissions:
-  contents: write
   
   workflow_dispatch:
+  # ---------- add these two lines ----------
+  permissions:
+    contents: write
+  # ----------------------------------------
 
 jobs:
   publish-core:
